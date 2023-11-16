@@ -5,32 +5,18 @@
 
 <div align="center">
 
-  <a href="https://github.com/LightDestory/RepositoryTemplate">
-    <img src="https://raw.githubusercontent.com/LightDestory/RepositoryTemplate/master/.github/assets/images/presentation_image.png" alt="Preview" width="90%">
+  <a href="https://github.com/LightDestory/IoT_ESP32_Firmware">
+    <img src="https://raw.githubusercontent.com/LightDestory/IoT_ESP32_Firmware/master/.github/assets/images/presentation_image.jpg" alt="Preview" width="90%">
   </a>
 
-  <h2 align="center">PROJECT_NAME</h2>
+  <h2 align="center">IoT_ESP32 Firmware</h2>
   
   <p align="center">
-      PROJECT_SHORT_DESCRIPTION
+      A ESP32 Firmware that implements all the feature learnt during the IoT course @ UniCT-LM18
   </p>
   
   <br />
   <br />
-
-  <!-- MultiLang Selector - DELETE ME IF NOT NEEDED -->
-
-  <section>
-    This README is available in the following languages:
-    <br />
-    <a href="README.md">English</a>
-    ·
-    Italian
-    <br />
-    <br />
-  </section>
-
-</div>
 
 <!-- ToC -->
 
@@ -44,13 +30,11 @@
       <a href="#gear-getting-started">⚙️ Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-        <li><a href="#usage">Usage</a></li>
+        <li><a href="#extension-board-schema">Extension Board Schema</a></li>
+        <li><a href="#compile-and-flash">Compile and Flash</a></li>
         <li><a href="#notes">Notes</a></li>
       </ul>
     </li>
-    <li><a href="#dizzy-contributing">💫 Contributing</a></li>
-    <li><a href="#handshake-support">🤝 Support</a></li>
     <li><a href="#warning-license">⚠️ License</a></li>
     <li><a href="#hammer_and_wrench-built-with">🛠️ Built With</a></li>
   </ol>
@@ -60,7 +44,20 @@
 
 ## :book: About The Project
 
-PROJECT_LONG_DESCRIPTION
+This repository hosts the source code of a LilyGo-Lora32 compatible firmware.
+
+The firmware is going to implement all the features that will be taught in the IoT course @ UniCT-LM18 such as:
+
+- Basic GPIO handling
+- Display usage
+- Bluetooth 
+- Bluetooth Low Energy
+- LoRa
+- ESP32 Meshing
+- SD Card I/O
+and so on...
+
+Moreover, the code is structures in multiple modules each containing the logic of a specific task. There are also helper modules to make easier my life.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -68,55 +65,35 @@ PROJECT_LONG_DESCRIPTION
 
 ## :gear: Getting Started
 
-START_INFO
+This firmware has been developed for LilyGo Lora32 v1.6.1, flashing it on different models you may observe unexpected behaviors.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Prerequisites
 
-PREQ_INFO
+To be able to compile and flash this firmware on your board you need the following prerequisites:
+
+- Visual Studio Code with PlatformIO extension;
+  - You can also use CLion with the PlatformIO plugin;
+- The reference extension board, weld by yourself, containing all the required hardware components. Please read carefully the following section containing the reference extension board schema.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Installation
+### Extension Board Schema
 
-INSTALL_INFO
+WIP
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Usage
+### Compile and Flash
 
-USAGE_INFO
+WIP
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Notes
 
-NOTES_INFO
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- Contribute Block -->
-
-## :dizzy: Contributing
-
-If you are interested in contributing, please refer to [Contributing Guidelines](.github/CONTRIBUTING.md) for more information and take a look at open issues. Ask any questions you may have and you will be provided guidance on how to get started.
-
-Thank you for considering contributing.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- Support Block -->
-
-## :handshake: Support
-
-If you find value in my work, please consider making a donation to help me create, and improve my projects.
-
-Your donation will go a long way in helping me continue to create free software that can benefit people around the world.
-
-<p align="center">
-<a href='https://ko-fi.com/M4M6KC01A' target='_blank'><img src='https://raw.githubusercontent.com/LightDestory/RepositoryTemplate/master/.github/assets/images/support.png' alt='Buy Me a Hot Chocolate at ko-fi.com' width="45%" /></a>
-</p>
+Nothing for now
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -132,6 +109,7 @@ The content of this repository is distributed under the GNU GPL-3.0 License. See
 
 ## :hammer_and_wrench: Built With
 
-- [Capybara](https://it.wikipedia.org/wiki/Hydrochoerus_hydrochaeris)
+- [LilyGo Board](https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series)
+- [PlatformIO](https://platformio.org/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
