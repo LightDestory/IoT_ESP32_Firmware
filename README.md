@@ -6,7 +6,7 @@
 <div align="center">
 
   <a href="https://github.com/LightDestory/IoT_ESP32_Firmware">
-    <img src="https://raw.githubusercontent.com/LightDestory/IoT_ESP32_Firmware/master/.github/assets/images/presentation_image.jpg" alt="Preview" width="90%">
+    <img src="https://raw.githubusercontent.com/LightDestory/IoT_ESP32_Firmware/master/.github/assets/images/presentation_image.jpg" alt="Preview" width="60%">
   </a>
 
   <h2 align="center">IoT_ESP32 Firmware</h2>
