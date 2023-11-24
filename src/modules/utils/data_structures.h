@@ -7,7 +7,7 @@ namespace DATA_STRUCTURES {
     struct workload {
         String name;
 
-        void (*callback)(void); // pointer to void!
+        void (*callback)(); // pointer to void!
     };
 }
 

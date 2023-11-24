@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "pin_configuration.h"
-#include "utils/serial_logger.h"
+#include "modules/utils/serial_logger/serial_logger.h"
 
 void PIN_CONFIGURATION::initPinMode() {
     SERIAL_LOGGER::log("Initializing Pin Mode");

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "display.h"
 #include "images.h"
-#include "../utils/serial_logger.h"
+#include "modules/utils/serial_logger/serial_logger.h"
 
 SSD1306 DISPLAY_ESP::display_hw = SSD1306(0x3c, PIN_CONFIGURATION::DISPLAY_SDA, PIN_CONFIGURATION::DISPLAY_SCL);
 uint8_t DISPLAY_ESP::currentProgressBarPercentage = 0;

@@ -1,7 +1,7 @@
 #include "led_buttons.h"
 #include "../pin_configuration.h"
 #include "../display/display.h"
-#include "../utils/serial_logger.h"
+#include "modules/utils/serial_logger/serial_logger.h"
 #include <Arduino.h>
 
 

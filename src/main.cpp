@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include "modules/utils/data_structures.h"
+#include "modules/utils/globals.h"
 #include "modules/display/display.h"
 #include "modules/pin_configuration.h"
 #include "modules/led_buttons/led_buttons.h"
-#include "modules/utils/serial_logger.h"
+#include "modules/utils/serial_logger/serial_logger.h"
 #include "modules/volt_meter/volt_meter.h"
 #include "modules/bluetooth/bl_communication.h"
 
@@ -11,7 +12,7 @@ const uint8_t IMPLEMENTED_PROGRAMS = 3;
 DATA_STRUCTURES::workload programs[IMPLEMENTED_PROGRAMS] = {
         {"Volt Meter",  VOLT_METER::looper},
         {"LED Buttons", LED_BUTTONS::looper},
-        {"BL_COM",      BL_COM::looper}
+        {"BLE_COM",      BLE_COM::looper}
 };
 
 int8_t selection_workload_cursor = 0;
@@ -28,9 +29,10 @@ void checkProgramInterrupt() {
         return;
     }
     if (digitalRead(PIN_CONFIGURATION::BUTTON_1) == LOW) {
-        if (++interrupt_watcher == 10) {
+        if (++interrupt_watcher == 8) {
             interrupt_watcher = 0;
             selected_workload = -1;
+            GLOBALS::interrupt_flag = true;
             PIN_CONFIGURATION::resetOutputs();
             return;
         }
@@ -48,9 +50,9 @@ void setup() {
     DISPLAY_ESP::showBootAnimation();
     PIN_CONFIGURATION::initPinMode();
     DISPLAY_ESP::updateBootAnimationProgressBar(25);
-    delay(400);
+    delay(300);
     PIN_CONFIGURATION::resetOutputs();
-    delay(400);
+    delay(300);
     DISPLAY_ESP::updateBootAnimationProgressBar(100);
 }
 
