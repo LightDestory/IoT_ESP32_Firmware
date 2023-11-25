@@ -3,7 +3,8 @@
 
 #include "SSD1306.h"
 #include "../pin_configuration.h"
-#include "../utils/data_structures.h"
+#include "../utils/globals.h"
+#include <vector>
 
 namespace DISPLAY_ESP {
     extern SSD1306 display_hw;
@@ -17,16 +18,19 @@ namespace DISPLAY_ESP {
      * @return: A validated target percentage.
      */
     uint8_t _progressBarValidation(uint8_t targetPercentage);
+
     /*
      * This function is used to show and update the progress bar of the boot animation.
      * It will update the progress bar only if the target percentage is valid.
      * @param targetPercentage: The target percentage of the progress bar.
      */
     void updateBootAnimationProgressBar(uint8_t targetPercentage);
+
     /*
      * This function is used to display the boot animation followed by the progress bar.
      */
     void showBootAnimation();
+
     /*
      * This function is used to draw a centered image with a title and a subtitle on the SSD1306 display.
      * @param image: The image to be drawn.
@@ -34,6 +38,7 @@ namespace DISPLAY_ESP {
      * @param subData: The subtitle to be drawn on the bottom of the title.
      */
     void drawCenteredImageTitleSubtitle(const unsigned char image[], String title, String subData = "");
+
     /*
      * This function is used to draw a centered title and a subtitle on the SSD1306 display.
      * @param title: The title to be drawn.
@@ -51,7 +56,11 @@ namespace DISPLAY_ESP {
      * @param selection_cursor: The current selected entry from the menu.
      * @param selection: The selected program to execute.
      */
-    void requestSelectionFromMenu(String title, DATA_STRUCTURES::workload *menu_entries, const uint8_t *quantity,
+    void requestSubroutineFromMenu(String title, DATA_STRUCTURES::workload *menu_entries, const uint8_t *quantity,
+                                   int8_t *selection_cursor, int8_t *selection);
+
+    void requestBLEDeviceFromMenu(String title, std::vector<DATA_STRUCTURES::ble_device_descriptor> *devices,
+                                  uint8_t *quantity,
                                   int8_t *selection_cursor, int8_t *selection);
 }
 #endif

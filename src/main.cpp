@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include "modules/utils/data_structures.h"
 #include "modules/utils/globals.h"
 #include "modules/display/display.h"
 #include "modules/pin_configuration.h"
@@ -12,7 +11,7 @@ const uint8_t IMPLEMENTED_PROGRAMS = 3;
 DATA_STRUCTURES::workload programs[IMPLEMENTED_PROGRAMS] = {
         {"Volt Meter",  VOLT_METER::looper},
         {"LED Buttons", LED_BUTTONS::looper},
-        {"BLE_COM",      BLE_COM::looper}
+        {"BLE_COM",     BLE_COM::looper}
 };
 
 int8_t selection_workload_cursor = 0;
@@ -29,9 +28,10 @@ void checkProgramInterrupt() {
         return;
     }
     if (digitalRead(PIN_CONFIGURATION::BUTTON_1) == LOW) {
-        if (++interrupt_watcher == 8) {
+        if (++interrupt_watcher == 10) {
             interrupt_watcher = 0;
             selected_workload = -1;
+            selection_workload_cursor = 0;
             GLOBALS::interrupt_flag = true;
             PIN_CONFIGURATION::resetOutputs();
             return;
@@ -59,8 +59,8 @@ void setup() {
 void loop() {
     checkProgramInterrupt();
     if (selected_workload == -1) {
-        DISPLAY_ESP::requestSelectionFromMenu("Select Program", programs, &IMPLEMENTED_PROGRAMS,
-                                              &selection_workload_cursor, &selected_workload);
+        DISPLAY_ESP::requestSubroutineFromMenu("Select Program", programs, &IMPLEMENTED_PROGRAMS,
+                                               &selection_workload_cursor, &selected_workload);
     } else {
         programs[selected_workload].callback();
     }

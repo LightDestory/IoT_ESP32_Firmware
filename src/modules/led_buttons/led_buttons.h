@@ -7,10 +7,12 @@ namespace LED_BUTTONS {
      * This function checks the state of the buttons and turns on/off the LEDs.
      */
     void _button_check();
+
     /*
      * This function displays the information on the display about the LEDs usage.
      */
     void _display_info();
+
     /*
      * This function represents the main loop of the module.
      */

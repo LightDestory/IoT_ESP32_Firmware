@@ -80,8 +80,8 @@ void DISPLAY_ESP::updateBootAnimationProgressBar(uint8_t targetPercentage) {
 }
 
 void
-DISPLAY_ESP::requestSelectionFromMenu(String title, DATA_STRUCTURES::workload *menu_entries, const uint8_t *quantity,
-                                      int8_t *selection_cursor, int8_t *selection) {
+DISPLAY_ESP::requestSubroutineFromMenu(String title, DATA_STRUCTURES::workload *menu_entries, const uint8_t *quantity,
+                                       int8_t *selection_cursor, int8_t *selection) {
     if (digitalRead(PIN_CONFIGURATION::BUTTON_2) == LOW) {
         *selection = *selection_cursor;
         return;
@@ -99,6 +99,30 @@ DISPLAY_ESP::requestSelectionFromMenu(String title, DATA_STRUCTURES::workload *m
         uint8_t sel = (*selection_cursor + i) % *quantity;
         display_hw.drawString(0, 11 * (i + 1),
                               i == 0 ? (menu_entries + sel)->name + " <--" : (menu_entries + sel)->name);
+    }
+    display_hw.display();
+}
+
+void DISPLAY_ESP::requestBLEDeviceFromMenu(String title, std::vector<DATA_STRUCTURES::ble_device_descriptor> *devices,
+                                           uint8_t *quantity,
+                                           int8_t *selection_cursor, int8_t *selection) {
+    if (digitalRead(PIN_CONFIGURATION::BUTTON_2) == LOW) {
+        *selection = *selection_cursor;
+        return;
+    }
+    if (digitalRead(PIN_CONFIGURATION::BUTTON_1) == LOW) {
+        *selection_cursor = (*selection_cursor + 1) % *quantity;
+    }
+    display_hw.clear();
+    display_hw.setFont(ArialMT_Plain_10);
+    display_hw.setTextAlignment(TEXT_ALIGN_CENTER);
+    display_hw.drawString(64, 0, title);
+    display_hw.setTextAlignment(TEXT_ALIGN_LEFT);
+    uint8_t min = *quantity < 5 ? *quantity : 5;
+    for (uint8_t i = 0; i < min; ++i) {
+        uint8_t sel = (*selection_cursor + i) % *quantity;
+        display_hw.drawString(0, 11 * (i + 1),
+                              i == 0 ? devices->at(sel).name + " <--" : devices->at(sel).name);
     }
     display_hw.display();
 }

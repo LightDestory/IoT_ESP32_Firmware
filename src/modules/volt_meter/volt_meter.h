@@ -14,6 +14,7 @@ namespace VOLT_METER {
      * This function draws the current Voltage on the display.
      */
     void _drawVoltageInputToDisplay();
+
     /*
      * This function represents the main loop of the module.
      */
