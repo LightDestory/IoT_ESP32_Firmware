@@ -15,21 +15,31 @@ std::vector<DATA_STRUCTURES::ble_device_descriptor> BLE_COM::found_devices = {};
 char BLE_COM::local_addr[18] = "";
 bool BLE_COM::scan_device_executed = false;
 BLEClient *BLE_COM::client = nullptr;
+BLEScan *BLE_COM::scanner = nullptr;
 DATA_STRUCTURES::workload BLE_COM::sub_menus[BLE_COM::IMPLEMENTED_SUBS] = {
-        {"BLE GATT Client DeviceName", BLE_COM::GATT_Client},
-        {"Display BL Mac Addr",        BLE_COM::displayMacAddr}
+        {"GATT DeviceName",     BLE_COM::GATT_Client_DeviceName},
+        {"GATT BatteryValue",   BLE_COM::GATT_Client_BatteryLevel},
+        {"Display BL Mac Addr", BLE_COM::displayMacAddr}
 };
 
 BLE_COM::BLE_scanCallback *callback = new BLE_COM::BLE_scanCallback();
 
-void BLE_COM::GATT_Client() {
+void BLE_COM::GATT_Client_DeviceName() {
+    GATT_Client("Device Name", "00001800-0000-1000-8000-00805F9B34FB", "00002A00-0000-1000-8000-00805F9B34FB");
+}
+
+void BLE_COM::GATT_Client_BatteryLevel() {
+    GATT_Client("Battery Level", "0000180F-0000-1000-8000-00805F9B34FB", "00002A19-0000-1000-8000-00805F9B34FB");
+}
+
+void BLE_COM::GATT_Client(String title, String ServiceUUID, String CharacteristicUUID) {
     if (found_devices.empty() && !scan_device_executed) {
         DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::radar, "Scanning", "Wait 6 secs");
-        BLEScan *pBLEScan = BLEDevice::getScan();
-        pBLEScan->setAdvertisedDeviceCallbacks(callback);
-        pBLEScan->setActiveScan(true);
-        pBLEScan->start(3);
-        delay(4000);
+        scanner = BLEDevice::getScan();
+        client = BLEDevice::createClient();
+        scanner->setAdvertisedDeviceCallbacks(callback);
+        scanner->setActiveScan(true);
+        scanner->start(5);
         scan_device_executed = true;
     }
     if (found_devices.empty() && scan_device_executed) {
@@ -43,39 +53,48 @@ void BLE_COM::GATT_Client() {
         DISPLAY_ESP::requestBLEDeviceFromMenu("Select Device", &found_devices, &quantity,
                                               &selection_device_cursor, &selected_device);
     } else {
-        if (!client) {
+        if (!client->isConnected()) {
             SERIAL_LOGGER::log("Connecting to device..." + found_devices.at(selected_device).name);
-            client = BLEDevice::createClient();
-            client->connect(&found_devices.at(selected_device).descriptor);
-        }
-        if (client->isConnected()) {
+            DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::bluetooth, "Connecting",
+                                                        "Status");
+            if (!client->connect(&found_devices.at(selected_device).descriptor)) {
+                SERIAL_LOGGER::log("Failed to connect to device");
+                DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
+                                                            "Failed to connect to device");
+                state = GLOBALS::STATIC;
+                return;
+            }
+        } else {
             SERIAL_LOGGER::log("Connected to device..." + found_devices.at(selected_device).name);
-            BLERemoteService *pRemoteService = client->getService("00001800-0000-1000-8000-00805F9B34FB");
-            if (pRemoteService == nullptr) {
+            BLERemoteService *service = client->getService(ServiceUUID.c_str());
+            if (service == nullptr) {
                 DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
-                                                            "Failed to find Device Info Service");
-                state = GLOBALS::FAILED_INIT;
-                return;
+                                                            "Failed to find Service");
+            } else {
+                SERIAL_LOGGER::log("Found Service!");
+                BLERemoteCharacteristic *feature = service->getCharacteristic(CharacteristicUUID.c_str());
+                if (feature == nullptr) {
+                    DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
+                                                                "Failed to find Feature");
+                } else {
+                    String value = feature->readValue().c_str();
+                    SERIAL_LOGGER::log("Value: " + value);
+                    DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::bluetooth, title,
+                                                                value);
+                }
             }
-            SERIAL_LOGGER::log("Found Device Info Service!");
-            BLERemoteCharacteristic *pRemoteCharacteristic = pRemoteService->getCharacteristic(
-                    "00002A00-0000-1000-8000-00805F9B34FB");
-            if (pRemoteCharacteristic == nullptr) {
-                DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
-                                                            "Failed to find Device Name Service");
-                state = GLOBALS::FAILED_INIT;
-                return;
-            }
-            DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::bluetooth, "Device Name",
-                                                        pRemoteCharacteristic->readValue().c_str());
+            state = GLOBALS::STATIC;
+            client->disconnect();
+            scanner->stop();
+            scanner->clearResults();
+            return;
         }
-        client->disconnect();
     }
 }
 
 void BLE_COM::displayMacAddr() {
-    if (state != GLOBALS::LOOPING)
-        state = GLOBALS::LOOPING;
+    if (state != GLOBALS::STATIC)
+        state = GLOBALS::STATIC;
     DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::bluetooth, "Your Mac Addr", local_addr);
 }
 
@@ -121,10 +140,10 @@ void BLE_COM::looper() {
     }
     if (state == GLOBALS::UN_SETUP)
         init();
-    if (state == GLOBALS::FAILED_INIT)
+    if (state == GLOBALS::FAILED_INIT or state == GLOBALS::STATIC)
         return;
     if (BLE_COM::selected_workload == -1) {
-        DISPLAY_ESP::requestSubroutineFromMenu("BL Menu", sub_menus, &IMPLEMENTED_SUBS, &selection_workload_cursor,
+        DISPLAY_ESP::requestSubroutineFromMenu("BLE Menu", sub_menus, &IMPLEMENTED_SUBS, &selection_workload_cursor,
                                                &selected_workload);
     } else {
         sub_menus[BLE_COM::selected_workload].callback();

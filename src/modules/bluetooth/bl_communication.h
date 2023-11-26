@@ -15,7 +15,7 @@ namespace BLE_COM {
     extern char local_addr[18];
 
     // Subroutines stuff
-    const uint8_t IMPLEMENTED_SUBS = 2;
+    const uint8_t IMPLEMENTED_SUBS = 3;
     extern GLOBALS::SUB_ROUTINE_STATE state;
     extern int8_t selection_workload_cursor;
     extern int8_t selected_workload;
@@ -23,6 +23,7 @@ namespace BLE_COM {
     extern int8_t selected_device;
     extern bool scan_device_executed;
     extern BLEClient *client;
+    extern BLEScan *scanner;
     extern DATA_STRUCTURES::workload sub_menus[IMPLEMENTED_SUBS];
     extern std::vector<DATA_STRUCTURES::ble_device_descriptor> found_devices;
 
@@ -48,7 +49,11 @@ namespace BLE_COM {
 
     void displayMacAddr();
 
-    void GATT_Client();
+    void GATT_Client_DeviceName();
+
+    void GATT_Client_BatteryLevel();
+
+    void GATT_Client(String title, String ServiceUUID, String CharacteristicUUID);
 }
 
 #endif //IOT_ESP32_FIRMWARE_BL_COMMUNICATION_H

@@ -7,7 +7,7 @@
 namespace GLOBALS {
     extern bool interrupt_flag;
     enum SUB_ROUTINE_STATE {
-        UN_SETUP, FAILED_INIT, READY, LOOPING
+        UN_SETUP, FAILED_INIT, READY, LOOPING, STATIC
     };
 }
 

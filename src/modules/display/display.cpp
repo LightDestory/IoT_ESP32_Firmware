@@ -68,7 +68,7 @@ void DISPLAY_ESP::updateBootAnimationProgressBar(uint8_t targetPercentage) {
         display_hw.setTextAlignment(TEXT_ALIGN_CENTER);
         display_hw.drawString(64, 32, "Loading...");
         display_hw.display();
-        delay(100);
+        delay(75);
     }
     currentProgressBarPercentage = targetPercentage;
     if (currentProgressBarPercentage == 100) {
