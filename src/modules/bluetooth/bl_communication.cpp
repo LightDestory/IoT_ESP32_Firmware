@@ -17,6 +17,7 @@ bool BLE_COM::scan_device_executed = false;
 BLEClient *BLE_COM::client = nullptr;
 BLEScan *BLE_COM::scanner = nullptr;
 DATA_STRUCTURES::workload BLE_COM::sub_menus[BLE_COM::IMPLEMENTED_SUBS] = {
+        {"GATT Discovery", BLE_COM::GATT_Client_Discovery},
         {"GATT DeviceName",     BLE_COM::GATT_Client_DeviceName},
         {"GATT BatteryValue",   BLE_COM::GATT_Client_BatteryLevel},
         {"Display BL Mac Addr", BLE_COM::displayMacAddr}
@@ -24,22 +25,14 @@ DATA_STRUCTURES::workload BLE_COM::sub_menus[BLE_COM::IMPLEMENTED_SUBS] = {
 
 BLE_COM::BLE_scanCallback *callback = new BLE_COM::BLE_scanCallback();
 
-void BLE_COM::GATT_Client_DeviceName() {
-    GATT_Client("Device Name", "00001800-0000-1000-8000-00805F9B34FB", "00002A00-0000-1000-8000-00805F9B34FB");
-}
-
-void BLE_COM::GATT_Client_BatteryLevel() {
-    GATT_Client("Battery Level", "0000180F-0000-1000-8000-00805F9B34FB", "00002A19-0000-1000-8000-00805F9B34FB");
-}
-
-void BLE_COM::GATT_Client(String title, String ServiceUUID, String CharacteristicUUID) {
+void BLE_COM::GATT_Client_Device_Connection() {
     if (found_devices.empty() && !scan_device_executed) {
         DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::radar, "Scanning", "Wait 6 secs");
         scanner = BLEDevice::getScan();
         client = BLEDevice::createClient();
         scanner->setAdvertisedDeviceCallbacks(callback);
         scanner->setActiveScan(true);
-        scanner->start(5);
+        scanner->start(6);
         scan_device_executed = true;
     }
     if (found_devices.empty() && scan_device_executed) {
@@ -64,31 +57,62 @@ void BLE_COM::GATT_Client(String title, String ServiceUUID, String Characteristi
                 state = GLOBALS::STATIC;
                 return;
             }
-        } else {
             SERIAL_LOGGER::log("Connected to device..." + found_devices.at(selected_device).name);
-            BLERemoteService *service = client->getService(ServiceUUID.c_str());
-            if (service == nullptr) {
-                DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
-                                                            "Failed to find Service");
-            } else {
-                SERIAL_LOGGER::log("Found Service!");
-                BLERemoteCharacteristic *feature = service->getCharacteristic(CharacteristicUUID.c_str());
-                if (feature == nullptr) {
-                    DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
-                                                                "Failed to find Feature");
-                } else {
-                    String value = feature->readValue().c_str();
-                    SERIAL_LOGGER::log("Value: " + value);
-                    DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::bluetooth, title,
-                                                                value);
-                }
-            }
-            state = GLOBALS::STATIC;
-            client->disconnect();
-            scanner->stop();
-            scanner->clearResults();
-            return;
         }
+    }
+}
+
+void BLE_COM::GATT_Client_DeviceName() {
+    GATT_Client("Device Name", BLEUUID("1800"), BLEUUID("2A00"));
+}
+
+void BLE_COM::GATT_Client_BatteryLevel() {
+    GATT_Client("Battery Level", BLEUUID("180F"), BLEUUID("2A19"));
+}
+
+void BLE_COM::GATT_Client_Discovery() {
+    GATT_Client_Device_Connection();
+    if (client->isConnected()) {
+        auto services = client->getServices();
+        for (auto &service : *services) {
+            BLERemoteService* remote = service.second;
+            for (auto &characteristic : *remote->getCharacteristics()) {
+                Serial.println(characteristic.first.c_str());
+            }
+        }
+        state = GLOBALS::STATIC;
+        client->disconnect();
+        scanner->stop();
+        scanner->clearResults();
+        return;
+    }
+}
+
+void BLE_COM::GATT_Client(String title, BLEUUID ServiceUUID, BLEUUID CharacteristicUUID) {
+    GATT_Client_Device_Connection();
+    if (client->isConnected()) {
+        BLERemoteService *service = client->getService(ServiceUUID);
+        if (service == nullptr) {
+            DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
+                                                        "Failed to find Service");
+        } else {
+            SERIAL_LOGGER::log("Found Service!");
+            BLERemoteCharacteristic *feature = service->getCharacteristic(CharacteristicUUID);
+            if (feature == nullptr) {
+                DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::error, "Error",
+                                                            "Failed to find Feature");
+            } else {
+                String value = feature->readValue().c_str();
+                SERIAL_LOGGER::log("Value: " + value);
+                DISPLAY_ESP::drawCenteredImageTitleSubtitle(DISPLAY_IMAGES::bluetooth, title,
+                                                            value);
+            }
+        }
+        state = GLOBALS::STATIC;
+        client->disconnect();
+        scanner->stop();
+        scanner->clearResults();
+        return;
     }
 }
 
