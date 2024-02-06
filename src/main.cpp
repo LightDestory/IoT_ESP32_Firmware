@@ -6,12 +6,17 @@
 #include "modules/utils/serial_logger/serial_logger.h"
 #include "modules/volt_meter/volt_meter.h"
 #include "modules/bluetooth/bl_communication.h"
+#include "modules/lora/lora_communication.h"
 
-const uint8_t IMPLEMENTED_PROGRAMS = 3;
+#include "FS.h"
+#include <LittleFS.h>
+
+const uint8_t IMPLEMENTED_PROGRAMS = 4;
 DATA_STRUCTURES::workload programs[IMPLEMENTED_PROGRAMS] = {
         {"Volt Meter",  VOLT_METER::looper},
         {"LED Buttons", LED_BUTTONS::looper},
-        {"BLE_COM",     BLE_COM::looper}
+        {"BLE_COM",     BLE_COM::looper},
+        {"LoRa",     LORA::looper}
 };
 
 int8_t selection_workload_cursor = 0;
